@@ -182,7 +182,7 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
         'longitude' => $longitude
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_MESSAGE, 'POST', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_LOCATION, 'POST', $parameters, null);
     if($handle === false) {
         error_log('Failed to prepare cURL handle');
         return false;

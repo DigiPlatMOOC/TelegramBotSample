@@ -122,8 +122,10 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
     // Prepare final request URL
     $final_url = $url . '?' . http_build_query($parameters);
 
+    echo $final_url . PHP_EOL;
+
     // Prepare cURL handle
-    $handle = curl_init($url);
+    $handle = curl_init($final_url);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($handle, CURLOPT_TIMEOUT, 60);

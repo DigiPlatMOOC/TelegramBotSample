@@ -60,7 +60,7 @@ function perform_curl_request($handle) {
         return false;
     }
     else if ($http_code != 200) {
-        error_log("Request failure with code $http_code");
+        error_log("Request failure with code $http_code ($response)");
         return false;
     }
     else {

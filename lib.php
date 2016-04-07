@@ -139,12 +139,14 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
  * https://core.telegram.org/bots/api#sendmessage
 
  * @param int $chat_id Identifier of the Telegram chat session.
+ * @param string $message Message to send.
  * @param array $parameters Additional parameters that match the API request.
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
-function telegram_send_message($chat_id, $parameters) {
+function telegram_send_message($chat_id, $message, $parameters) {
     prepare_parameters($parameters, new array(
-        'chat_id' => $chat_id
+        'chat_id' => $chat_id,
+        'text' => $message
     ));
 
     $handle = prepare_curl_api_request(TELEGRAM_API_URI_MESSAGE, 'POST', $parameters, null);

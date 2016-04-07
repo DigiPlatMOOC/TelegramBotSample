@@ -4,7 +4,7 @@
  * ===================
  * UWiClab, University of Urbino
  * ===================
- * Basic message processing end-point for your bot.
+ * Basic message processing webhook end-point for your bot.
  * Start editing here. =)
  */
 
@@ -12,9 +12,10 @@ include ("lib.php");
 
 function processMessage($message)
 {
-  // process incoming message
+  // Extract important information from the message object
   $message_id = $message['message_id'];
   $chat_id = $message['chat']['id'];
+
   if (isset($message['text']))
   	{
    	 	// incoming text message
@@ -54,8 +55,8 @@ if (!$update) {
     exit;
 }
 else {
-    if (isset($update["message"])) {
-        processMessage($update["message"]);
+    if (isset($update['message'])) {
+        processMessage($update['message']);
     }
     else {
         error_log('Bad message received (no message field)');

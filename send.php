@@ -4,7 +4,7 @@
  * ===================
  * UWiClab, University of Urbino
  * ===================
- * Basic message processing end-point for your bot.
+ * Basic message sending script for your bot.
  * Start editing here. =)
  */
 

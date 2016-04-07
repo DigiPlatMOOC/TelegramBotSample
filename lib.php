@@ -17,7 +17,7 @@ include ("config.php");
  */
 function prepare_parameters($orig_params, $add_params) {
     if(!$orig_params || !is_array($orig_params)) {
-        $orig_params = new array();
+        $orig_params = array();
     }
 
     if($add_params && is_array($add_params)) {
@@ -105,7 +105,7 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
         return false;
     }
     if(!$parameters) {
-        $parameters = new array();
+        $parameters = array();
     }
     if(!is_array($parameters)) {
         error_log('Parameters must be an array of values');
@@ -146,7 +146,7 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
 function telegram_send_message($chat_id, $message, $parameters) {
-    prepare_parameters($parameters, new array(
+    $parameters = prepare_parameters($parameters, array(
         'chat_id' => $chat_id,
         'text' => $message
     ));

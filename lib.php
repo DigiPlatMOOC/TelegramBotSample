@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * Telegram Bot Sample
  * ===================
  * UWiClab, University of Urbino
@@ -9,9 +9,30 @@
 
 include ("config.php");
 
-/*
- * Performs a CURL request and returns the expected JSON response as an object.
- * Returns false on failure.
+/**
+ * Mixes together parameters for an HTTP request.
+ * @param array $orig_params Original parameters or null.
+ * @param array $add_params Additional parameters or null.
+ * @return array Final mixed parameters.
+ */
+function prepare_parameters($orig_params, $add_params) {
+    if(!$orig_params || !is_array($orig_params)) {
+        $orig_params = new array();
+    }
+
+    if($add_params && is_array($add_params)) {
+        foreach ($add_params as $key => &$val) {
+            $orig_params[$key] = $val;
+        }
+    }
+
+    return $orig_params;
+}
+
+/**
+ * Performs a cURL request and returns the expected response as string.
+ * @param object Handle to cURL request.
+ * @return string | false Response as text or false on failure.
  */
 function perform_curl_request($handle) {
     $response = curl_exec($handle);
@@ -35,29 +56,43 @@ function perform_curl_request($handle) {
         return false;
     }
     else if($http_code == 401) {
-        error_log('Invalid access token');
+        error_log('Unauthorized request (check token)');
         return false;
     }
     else if ($http_code != 200) {
-        $response = json_decode($response, true);
-        error_log("Request has failed with error {$response['error_code']}: {$response['description']}");
+        error_log("Request failure with code $http_code");
         return false;
     }
     else {
-        // Everything fine, return the result as object
-        $response = json_decode($response, true);
-        return $response['result'];
+        return $response;
     }
 }
 
-/*
+/**
+ * Performs a cURL request to a Telegram API and returns the parsed results.
+ * @param object Handle to cURL request.
+ * @return object | false Parsed response object or false on failure.
+ */
+function perform_telegram_request($handle) {
+    $response = perform_curl_request($handle);
+    if($response === false) {
+        return false;
+    }
+
+    // Everything fine, return the result as object
+    $response = json_decode($response, true);
+    return $response['result'];
+}
+
+/**
  * Prepares an API request using cURL.
  * Returns a cURL handle, ready to perform the request, or false on failure.
  *
- * @url (string) HTTP request URI.
- * @method (string) HTTP method.
- * @parameters (array) Query string parameters.
- * @body (mixed) String or array of values to be passed as request payload.
+ * @param string $url HTTP request URI.
+ * @param string $method HTTP method ('GET' or 'POST').
+ * @param array $parameters Query string parameters.
+ * @param mixed $body String or array of values to be passed as request payload.
+ * @return object | false cURL handle or false on failure.
  */
 function prepare_curl_api_request($url, $method, $parameters, $body) {
     // Parameter checking
@@ -97,6 +132,28 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
     }
 
     return $handle;
+}
+
+/**
+ * Sends a Telegram bot message.
+ * https://core.telegram.org/bots/api#sendmessage
+
+ * @param int $chat_id Identifier of the Telegram chat session.
+ * @param array $parameters Additional parameters that match the API request.
+ * @return object | false Parsed JSON object returned by the API or false on failure.
+ */
+function telegram_send_message($chat_id, $parameters) {
+    prepare_parameters($parameters, new array(
+        'chat_id' => $chat_id
+    ));
+
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_MESSAGE, 'POST', $parameters, null);
+    if($handle === false) {
+        error_log('Failed to prepare cURL handle');
+        return false;
+    }
+
+    return perform_telegram_request($handle);
 }
 
 function apiRequest($method, $parameters) {
@@ -189,14 +246,5 @@ function alicerequest($chat_id,$text)
 	}
 
     return $response;
-
-
 }
-
-
-
-
-
-
-
 ?>

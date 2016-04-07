@@ -160,95 +160,34 @@ function telegram_send_message($chat_id, $message, $parameters) {
     return perform_telegram_request($handle);
 }
 
-function apiRequest($method, $parameters) {
-  if (!is_string($method)) {
-    error_log("Method name must be a string\n");
-    return false;
-  }
+/**
+ * Sends a Telegram bot location message.
+ * https://core.telegram.org/bots/api#sendlocation
 
-  if (!$parameters) {
-    $parameters = array();
-  } else if (!is_array($parameters)) {
-    error_log("Parameters must be an array\n");
-    return false;
-  }
-
-  foreach ($parameters as $key => &$val) {
-    // encoding to JSON array parameters, for example reply_markup
-    if (!is_numeric($val) && !is_string($val)) {
-      $val = json_encode($val);
-    }
-  }
-  $url = API_URL.$method.'?'.http_build_query($parameters);
-
-  $handle = curl_init($url);
-  curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-  curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-
-  return exec_curl_request($handle);
-}
-
-function apiRequestJson($method, $parameters) {
-  if (!is_string($method)) {
-    error_log("Method name must be a string\n");
-    return false;
-  }
-
-  if (!$parameters) {
-    $parameters = array();
-  } else if (!is_array($parameters)) {
-    error_log("Parameters must be an array\n");
-    return false;
-  }
-
-  $parameters["method"] = $method;
-
-  $handle = curl_init(API_URL);
-  curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-  curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-  curl_setopt($handle, CURLOPT_POSTFIELDS, json_encode($parameters));
-  curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-
-  return exec_curl_request($handle);
-}
-
-function alicerequest($chat_id,$text)
-{
-	$handle = curl_init(ALICE_URL);
-    curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($handle, CURLOPT_TIMEOUT, 60);
-    curl_setopt($handle, CURLOPT_POST, TRUE);
-
-	$requestString = "say=".$text."&bot_id=3&format=json&convo_id=" . $chat_id;
-	echo $requestString;
-
-    curl_setopt($handle, CURLOPT_POSTFIELDS, $requestString);
-    curl_setopt($handle, CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded","Accept: application/json"));
-
-    $response = curl_exec($handle);
-
-    if ($response === false) {
-      $errno = curl_errno($handle);
-      $error = curl_error($handle);
-      error_log("Curl returned error $errno: $error\n");
-      curl_close($handle);
-      return false;
+ * @param int $chat_id Identifier of the Telegram chat session.
+ * @param float $latitude Coordinate latitude.
+ * @param float $longitude Coordinate longitude.
+ * @param array $parameters Additional parameters that match the API request.
+ * @return object | false Parsed JSON object returned by the API or false on failure.
+ */
+function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
+    if(!is_numeric($latitude) || !is_numeric($longitude)) {
+        error_log('Latitude and longitude must be numbers');
+        return false;
     }
 
-    $http_code = intval(curl_getinfo($handle, CURLINFO_HTTP_CODE));
-    curl_close($handle);
+    $parameters = prepare_parameters($parameters, array(
+        'chat_id' => $chat_id,
+        'latitude' => $latitude,
+        'longitude' => $longitude
+    ));
 
-    if ($http_code == 200) {
-		$responseBody = json_decode($response, true);
-		$response = $responseBody['botsay'];
-	}
-	else {
-		$response = "???";
-	}
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_MESSAGE, 'POST', $parameters, null);
+    if($handle === false) {
+        error_log('Failed to prepare cURL handle');
+        return false;
+    }
 
-    return $response;
+    return perform_telegram_request($handle);
 }
 ?>

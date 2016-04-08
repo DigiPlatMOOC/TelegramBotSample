@@ -22,10 +22,11 @@ if (!$update) {
 }
 else {
     if (isset($update['message'])) {
-        processMessage($update['message']);
+        process_message($update['message']);
     }
     else {
         error_log('Bad message received (no message field)');
         exit;
     }
 }
+?>

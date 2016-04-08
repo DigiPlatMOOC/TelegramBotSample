@@ -190,4 +190,29 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
 
     return perform_telegram_request($handle);
 }
+
+/**
+ * Requests message updates from the Telegram API.
+ * https://core.telegram.org/bots/api#getupdates
+
+ * @param int $offset Identifier of the first update to be returned, or null.
+ * @param int $limit Maximum count of updates to fetch, or null.
+ * @param bool $long_poll Perform a long polling request (defaults to false).
+ * @return array | false Parsed array of updates or false on failure.
+ */
+function telegram_get_updates($offset = null, $limit = null, $long_poll = false) {
+    $parameters = array();
+    if(is_numeric($offset))
+        $parameters['offset'] = $offset;
+    if(is_numeric($limit) && $limit !== 0)
+        $parameters['limit'] = $limit;
+
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_UPDATES, 'GET', $parameters, null);
+    if($handle === false) {
+        error_log('Failed to prepare cURL handle');
+        return false;
+    }
+
+    return perform_telegram_request($handle);
+}
 ?>

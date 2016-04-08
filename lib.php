@@ -129,6 +129,7 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 5);
     curl_setopt($handle, CURLOPT_TIMEOUT, 60);
+    curl_setopt($handle, CURLOPT_USERAGENT, 'Telegram Bot client, UWiClab (https://github.com/UWiClab/TelegramBotSample)');
     if($method === 'POST') {
         curl_setopt($handle, CURLOPT_POST, true);
     }

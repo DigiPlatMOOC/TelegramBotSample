@@ -94,7 +94,7 @@ function perform_telegram_request($handle) {
  * @param mixed $body String or array of values to be passed as request payload.
  * @return object | false cURL handle or false on failure.
  */
-function prepare_curl_api_request($url, $method, $parameters, $body) {
+function prepare_curl_api_request($url, $method, $parameters, $body = null, $headers = null) {
     // Parameter checking
     if(!is_string($url)) {
         error_log('URL must be a string');
@@ -102,6 +102,10 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
     }
     if($method !== 'GET' && $method !== 'POST') {
         error_log('Method must be either GET or POST');
+        return false;
+    }
+    if($method !== 'POST' && $body) {
+        error_log('Cannot send request body content without POST method');
         return false;
     }
     if(!$parameters) {
@@ -132,6 +136,12 @@ function prepare_curl_api_request($url, $method, $parameters, $body) {
     curl_setopt($handle, CURLOPT_USERAGENT, 'Telegram Bot client, UWiClab (https://github.com/UWiClab/TelegramBotSample)');
     if($method === 'POST') {
         curl_setopt($handle, CURLOPT_POST, true);
+        if($body) {
+            curl_setopt($handle, CURLOPT_POSTFIELDS, $body);
+        }
+    }
+    if(is_array($headers)) {
+        curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
     }
 
     return $handle;

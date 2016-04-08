@@ -8,7 +8,7 @@
  * Start editing here. =)
  */
 
-include ("lib_msg_processing.php");
+include ('lib_msg_processing.php');
 
 // Get contents from HTTP request
 $content = file_get_contents("php://input");

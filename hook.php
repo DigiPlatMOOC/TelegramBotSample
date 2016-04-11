@@ -11,7 +11,7 @@
 include ('lib_msg_processing.php');
 
 // Get contents from HTTP request
-$content = file_get_contents("php://input");
+$content = stream_get_contents(STDIN);
 
 // Decode contents as JSON
 $update = json_decode($content, true);

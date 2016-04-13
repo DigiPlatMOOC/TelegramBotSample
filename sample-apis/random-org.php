@@ -9,7 +9,7 @@
 
 include ('../lib.php');
 
-define('RANDOM_ORG_API_KEY', '05b7433a-eb0c-4f44-b03d-9f4b9c23faed');
+define('RANDOM_ORG_API_KEY', '');
 
 $method_body = array(
     'jsonrpc' => '2.0',

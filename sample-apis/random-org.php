@@ -36,7 +36,9 @@ if($response === false) {
     exit;
 }
 
-echo ('Response from Random.org API:' . PHP_EOL);
+echo ('Response from Random.org API: ');
 print_r($response);
-echo PHP_EOL;
+echo (PHP_EOL);
+
+echo 'Random number: ' . json_decode($response, true)['result']['random']['data'][0] . PHP_EOL;
 ?>

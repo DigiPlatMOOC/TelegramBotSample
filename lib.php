@@ -206,15 +206,21 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
 
  * @param int $offset Identifier of the first update to be returned, or null.
  * @param int $limit Maximum count of updates to fetch, or null.
- * @param bool $long_poll Perform a long polling request (defaults to false).
+ * @param int | bool $long_poll Performs a long polling request (defaults to false).
+ *                              If true is passed, defaults to 60 seconds.
+ *                              Otherwise, takes the timeout in seconds to wait.
  * @return array | false Parsed array of updates or false on failure.
  */
 function telegram_get_updates($offset = null, $limit = null, $long_poll = false) {
     $parameters = array();
     if(is_numeric($offset))
         $parameters['offset'] = $offset;
-    if(is_numeric($limit) && $limit !== 0)
+    if(is_numeric($limit) && $limit > 0)
         $parameters['limit'] = $limit;
+    if($long_poll === true)
+        $long_poll = 60;
+    if(is_numeric($long_poll) && $long_poll > 0)
+        $parameters['timeout'] = $long_poll;
 
     $handle = prepare_curl_api_request(TELEGRAM_API_URI_UPDATES, 'GET', $parameters, null);
     if($handle === false) {

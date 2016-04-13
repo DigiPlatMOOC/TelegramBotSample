@@ -28,7 +28,8 @@ $handle = prepare_curl_api_request('https://api.random.org/json-rpc/1/invoke', '
     json_encode($method_body),
     array(
         'Content-Type: application/json-rpc'
-    ));
+    )
+);
 
 $response = perform_curl_request($handle);
 if($response === false) {

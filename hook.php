@@ -10,8 +10,11 @@
 
 include ('lib_msg_processing.php');
 
-// Get contents from HTTP request
-$content = stream_get_contents(STDIN);
+// Get input contents
+// Notice: we use php://stdin (the HTTP request body) normally, but switch
+//         over to php://stdin (standard input channel) when running from
+//         command line, in order to let you test the script via input pipe
+$content = file_get_contents((php_sapi_name() == "cli") ? "php://stdin" : "php://input");
 
 // Decode contents as JSON
 $update = json_decode($content, true);

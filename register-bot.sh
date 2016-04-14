@@ -16,7 +16,6 @@ function PrintHelp {
     echo ""
 }
 
-
 while getopts ":s:c:t:" opt; do
   case $opt in
     t)
@@ -55,3 +54,5 @@ fi
 echo "Executing: curl -F \"url=$SCRIPT\" -F \"certificate=@$CERTIFICATE\" https://api.telegram.org/bot$TOKEN/setWebhook"
 
 curl -F "url=$SCRIPT" -F "certificate=@$CERTIFICATE" https://api.telegram.org/bot$TOKEN/setWebhook
+
+echo ""

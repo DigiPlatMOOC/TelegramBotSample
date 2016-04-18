@@ -50,7 +50,7 @@ function process_message($message) {
             // ...do something
 
             echo 'Received /start command!' . PHP_EOL;
-   	 	}
+        }
         else {
             // Something else
             // ...do something else

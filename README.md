@@ -11,7 +11,7 @@ Have fun!
 You need:
 
 * **PHP:** in order to run samples and make your bot work in *pull* mode.
-* **Web server:** in order to serve requests by Telegram, in *push* mode.
+* **Web server:** in order to serve requests by Telegram, in *push* mode (Apache, Nginx, or anything else, really).
 
 First of all, create a new Telegram Bot, by chatting with the [BotFather](http://telegram.me/BotFather). Your bot will need a unique **nickname** and you will obtain a unique **token** in return.
 This token is all you need to communicate with the bot through the Telegram API.
@@ -85,6 +85,91 @@ The `-s` parameter should be an HTTPS URI pointing to the `hook.php` file on you
 
 Once the "web hook" has been setup, Telegram will automatically call your `hook.php` file whenever a message is received.
 
+(You can turn off any registered web hook by running the `unregister-bot.sh` script and passing in the bot's token.)
+
 ## Message processing
 
-Coming soon
+Both the `pull.php` and the `push.php` scripts receive messages from Telegram and process them by calling into the `process_message` function in `lib_msg_processing.php`.
+The function takes a new message as input and includes some boilerplate code for you to fill out:
+
+```php
+function process_message($message) {
+    // $message = {
+    //     "message_id": 123,
+    //     "from": {
+    //       "id": 123456789,
+    //       "first_name": "First",
+    //       "last_name": "Last",
+    //       "username": "FirstLast"
+    //     },
+    //     "chat": {
+    //       "id": 123456789,
+    //       "first_name": "First",
+    //       "last_name": "Last",
+    //       "username": "FirstLast",
+    //       "type": "private"
+    //     },
+    //     "date": 1460036220,
+    //     "text": "Text"
+    //   }
+    $message_id = $message['message_id'];
+    $chat_id = $message['chat']['id'];
+    $message_text = $message['text'];
+
+    // TODO: put message processing logic here
+}
+```
+
+Notice that the `$message_text` variable can be `null` if the message does not contain any text (for instance, if the user did send a location or an image).
+
+You can easily create an "echo bot" (that simply responds by sending back the original text to the user) by calling a library function:
+
+```php
+telegram_send_message($chat_id, $message_text, null);
+```
+
+Also, you can easily detect Telegram commands (which, by convention, start with a slash character, like `/start`) using `strpos`:
+
+```php
+if (strpos($text, "/start") === 0) {
+    // Received a /start command
+}
+```
+
+### Connecting with an AIML bot
+
+An easy way to add some kind of natural language processing intelligence to your bot, is to make use of an AIML interpreter, like—for instance—[Program-O](http://www.program-o.com).
+This open-source AIML interpreter also exposes a [public API](http://www.program-o.com/chatbotapi) that you can very easily hook up to your Telegram bot:
+
+```php
+// Send text by user to AIML bot
+$handle = prepare_curl_api_request('http://api.program-o.com/v2/chatbot/', 'POST',
+    array(
+        'say' => $message_text,
+        'bot_id' => 6,
+        'format' => 'json',
+        'convo_id' => 'uwiclab-bot-sample'
+    ),
+    null,
+    array(
+        'Content-Type: application/x-www-form-urlencoded',
+        'Accept: application/json'
+    )
+);
+$response = perform_curl_request($handle);
+
+// Response has the following JSON format:
+// {
+//     "convo_id" : "5uf2nupqmb",
+//     "usersay": "MESSAGE FROM USER",
+//     "botsay" : "Response by bot"
+// }
+$json_response = json_decode($response, true);
+$bot_response = $json_response['botsay'];
+
+// Send AIML bot response back to user
+$response = telegram_send_message($chat_id, $bot_response, null);
+```
+
+In order to customize your bot's intelligence, you'll have to download Program-O, install it locally to your server (this software requires PHP and MySQL), and then hook it up to your Telegram bot web hook.
+By providing one or more AIML files to the Program-O interpeter, you'll be able to have an *almost* natural conversation with your bot in no time.

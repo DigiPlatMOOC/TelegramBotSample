@@ -9,6 +9,7 @@
 
 include ('config.php');
 include ('lib_msg_processing.php');
+include ('lib_database.php');
 
 /**
  * Mixes together parameters for an HTTP request.

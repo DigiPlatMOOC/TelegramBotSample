@@ -8,6 +8,19 @@
  */
 
 /**
+ * Closes the existing connection to the database, if any.
+ */
+function db_close_connection() {
+    if(isset($GLOBALS['db_connection'])) {
+        $connection = $GLOBALS['db_connection'];
+        
+        mysqli_close($connection);
+    }
+    
+    unset($GLOBALS['db_connection']);
+}
+
+/**
  * Creates or retrieves a connection to the database.
  * @return object A valid connection to the database.
  */
@@ -39,6 +52,9 @@ function db_open_connection() {
         
         //Store connection for later
         $GLOBALS['db_connection'] = $connection;
+        
+        //Register clean up function for termination
+        register_shutdown_function('db_close_connection');
         
         return $connection;
     }

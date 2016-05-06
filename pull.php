@@ -11,10 +11,10 @@
 include ('lib.php');
 
 // Reload latest update ID received (if any) from persistent store
-$last_update = file_get_contents("pull-last-update.txt");
+$last_update = @file_get_contents("pull-last-update.txt");
 
 // Fetch updates from API
-// Note: we rememer the last fetched ID and query for the next one, if available.
+// Note: we remember the last fetched ID and query for the next one, if available.
 //       The third parameter enabled long-polling. Switch to any number of seconds
 //       to enable (the request will hang until timeout or until a message is received).
 $content = telegram_get_updates(intval($last_update) + 1, 1, false);

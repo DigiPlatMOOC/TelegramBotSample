@@ -10,8 +10,6 @@
  * Put your custom bot intelligence here!
  */
 
-include ('lib.php');
-
 /**
  * Processes a message received through the Telegram API.
  * @param object $message A message object as parsed from the Telegram API.

@@ -8,7 +8,7 @@
  * Start editing here. =)
  */
 
-include ('lib_msg_processing.php');
+include ('lib.php');
 
 // Reload latest update ID received (if any) from persistent store
 $last_update = file_get_contents("pull-last-update.txt");

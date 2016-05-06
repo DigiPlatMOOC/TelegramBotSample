@@ -7,7 +7,8 @@
  * Support library. Don't change a thing here.
  */
 
-include ("config.php");
+include ('config.php');
+include ('lib.php');
 
 /**
  * Mixes together parameters for an HTTP request.

@@ -8,7 +8,7 @@
  * Start editing here. =)
  */
 
-include ('lib_msg_processing.php');
+include ('lib.php');
 
 // Get input contents
 // Notice: we use php://stdin (the HTTP request body) normally, but switch

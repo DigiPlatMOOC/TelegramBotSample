@@ -13,6 +13,7 @@ include ('lib_database.php');
 
 /**
  * Mixes together parameters for an HTTP request.
+ *
  * @param array $orig_params Original parameters or null.
  * @param array $add_params Additional parameters or null.
  * @return array Final mixed parameters.
@@ -33,6 +34,7 @@ function prepare_parameters($orig_params, $add_params) {
 
 /**
  * Performs a cURL request and returns the expected response as string.
+ *
  * @param object Handle to cURL request.
  * @return string | false Response as text or false on failure.
  */
@@ -72,6 +74,7 @@ function perform_curl_request($handle) {
 
 /**
  * Performs a cURL request to a Telegram API and returns the parsed results.
+ *
  * @param object Handle to cURL request.
  * @return object | false Parsed response object or false on failure.
  */
@@ -150,7 +153,7 @@ function prepare_curl_api_request($url, $method, $parameters, $body = null, $hea
 /**
  * Sends a Telegram bot message.
  * https://core.telegram.org/bots/api#sendmessage
-
+ *
  * @param int $chat_id Identifier of the Telegram chat session.
  * @param string $message Message to send.
  * @param array $parameters Additional parameters that match the API request.
@@ -174,7 +177,7 @@ function telegram_send_message($chat_id, $message, $parameters) {
 /**
  * Sends a Telegram bot location message.
  * https://core.telegram.org/bots/api#sendlocation
-
+ *
  * @param int $chat_id Identifier of the Telegram chat session.
  * @param float $latitude Coordinate latitude.
  * @param float $longitude Coordinate longitude.
@@ -205,7 +208,7 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
 /**
  * Requests message updates from the Telegram API.
  * https://core.telegram.org/bots/api#getupdates
-
+ *
  * @param int $offset Identifier of the first update to be returned, or null.
  * @param int $limit Maximum count of updates to fetch, or null.
  * @param int | bool $long_poll Performs a long polling request (defaults to false).

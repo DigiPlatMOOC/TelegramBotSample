@@ -151,6 +151,22 @@ function prepare_curl_api_request($url, $method, $parameters, $body = null, $hea
 }
 
 /**
+ * Retrieves information about the bot.
+ * https://core.telegram.org/bots/api#getme
+ *
+ * @return object | false Parsed JSON object returned by the API or false on failure.
+ */
+function telegram_send_message() {
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_ME, 'GET', null, null);
+    if($handle === false) {
+        error_log('Failed to prepare cURL handle');
+        return false;
+    }
+
+    return perform_telegram_request($handle);
+}
+
+/**
  * Sends a Telegram bot message.
  * https://core.telegram.org/bots/api#sendmessage
  *

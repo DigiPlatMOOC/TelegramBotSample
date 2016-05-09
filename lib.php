@@ -156,7 +156,7 @@ function prepare_curl_api_request($url, $method, $parameters, $body = null, $hea
  *
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
-function telegram_send_message() {
+function telegram_get_bot_info() {
     $handle = prepare_curl_api_request(TELEGRAM_API_URI_ME, 'GET', null, null);
     if($handle === false) {
         error_log('Failed to prepare cURL handle');
@@ -232,6 +232,7 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
  */
 function telegram_send_photo($chat_id, $photo_path, $caption, $parameters) {
     if(!photo_path) {
+    if(!$photo_path) {
         error_log('Path to attached photo must be set');
         return false;
     }

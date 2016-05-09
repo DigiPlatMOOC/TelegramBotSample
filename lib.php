@@ -175,7 +175,7 @@ function telegram_get_bot_info() {
  * @param array $parameters Additional parameters that match the API request.
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
-function telegram_send_message($chat_id, $message, $parameters) {
+function telegram_send_message($chat_id, $message, $parameters = null) {
     $parameters = prepare_parameters($parameters, array(
         'chat_id' => $chat_id,
         'text' => $message
@@ -200,7 +200,7 @@ function telegram_send_message($chat_id, $message, $parameters) {
  * @param array $parameters Additional parameters that match the API request.
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
-function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
+function telegram_send_location($chat_id, $latitude, $longitude, $parameters = null) {
     if(!is_numeric($latitude) || !is_numeric($longitude)) {
         error_log('Latitude and longitude must be numbers');
         return false;
@@ -230,8 +230,7 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters) {
  * @param array $parameters Additional parameters that match the API request.
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
-function telegram_send_photo($chat_id, $photo_path, $caption, $parameters) {
-    if(!photo_path) {
+function telegram_send_photo($chat_id, $photo_path, $caption, $parameters = null) {
     if(!$photo_path) {
         error_log('Path to attached photo must be set');
         return false;

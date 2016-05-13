@@ -99,7 +99,7 @@ function perform_telegram_request($handle) {
  * @param mixed $body String or array of values to be passed as request payload.
  * @return object | false cURL handle or false on failure.
  */
-function prepare_curl_api_request($url, $method, $parameters, $body = null, $headers = null) {
+function prepare_curl_api_request($url, $method, $parameters = null, $body = null, $headers = null) {
     // Parameter checking
     if(!is_string($url)) {
         error_log('URL must be a string');

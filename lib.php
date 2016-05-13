@@ -129,12 +129,15 @@ function prepare_curl_api_request($url, $method, $parameters = null, $body = nul
     }
 
     // Prepare final request URL
-    $final_url = $url . '?' . http_build_query($parameters);
+    $query_string = http_build_query($parameters);
+    if(!empty($query_string)) {
+        $url .= '?' . $query_string;
+    }
 
-    echo $final_url . PHP_EOL;
+    echo $url . PHP_EOL;
 
     // Prepare cURL handle
-    $handle = curl_init($final_url);
+    $handle = curl_init($url);
     curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($handle, CURLOPT_USERAGENT, 'Telegram Bot client, UWiClab (https://github.com/UWiClab/TelegramBotSample)');
     if($method === 'POST') {

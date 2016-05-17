@@ -185,6 +185,49 @@ function db_table_query($sql) {
 }
 
 /**
+ * Performs a "select query" and returns one row of data as
+ * an array. This function is inteded for queries expected to
+ * return only one single row of data (e.g., queries with a
+ * "LIMIT 1" SQL clause or with a "WHERE" clause you are sure
+ * evaluates to true for only one row of the table).
+ * This query will fail if more than one row of results is
+ * generated.
+ * @param string $sql SQL query to perform.
+ * @return mixed The results row as an array, null if
+ *               no results where generated, or false on failure.
+ */
+function db_row_query($sql) {
+    $connection = db_open_connection();
+
+    if(!mysqli_real_query($connection, $sql)) {
+        db_default_error_logging($connection);
+        return false;
+    }
+
+    $result = mysqli_store_result($connection);
+    if($result === false) {
+        db_default_error_logging($connection, "Failed to store query results");
+        return false;
+    }
+
+    $num_rows = mysqli_num_rows($result);
+    if($num_rows > 1) {
+        mysqli_free_result($result);
+        error_log("Query ($sql) generated more than one row of results");
+        return false;
+    }
+    else if($num_rows == 0) {
+        mysqli_free_result($result);
+        return null;
+    }
+
+    $row = mysqli_fetch_row($result);
+    mysqli_free_result($result);
+
+    return $row;
+}
+
+/**
  * Escapes a string to be used as a value inside an SQL query.
  * @return string Escaped string.
  */

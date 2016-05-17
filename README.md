@@ -11,7 +11,7 @@ Have fun!
 You need:
 
 * **PHP:** in order to run samples and make your bot work in *pull* mode.
-* **Web server:** in order to serve requests by Telegram, in *push* mode (Apache, Nginx, or anything else, really).
+* **A web server:** in order to serve requests by Telegram, in *push* mode (Apache, Nginx, or anything similar, really).
 
 First of all, create a new Telegram Bot, by chatting with the [BotFather](http://telegram.me/BotFather). Your bot will need a unique **nickname** and you will obtain a unique **token** in return.
 This token is all you need to communicate with the bot through the Telegram API.
@@ -35,20 +35,24 @@ If no particular message is queried, Telegram may return the same message over a
 In order to advance through the queue of messages to deliver, the `pull.php` script keeps track of the last update received—by storing the update's ID—and by performing a query for the *next* update in queue. (See line 20.)
 The last update ID is stored in the `pull-last-update.txt` file.
 
-Also, Telegram's `getUpdates` query can perform **[long polling](https://core.telegram.org/bots/api#getupdates)**, which stalls your request until an update is ready to be delivered (or until the request times out).
-In order to make use of this feature, modify line 20 as follows:
+Also notice that Telegram's `getUpdates` query can perform **[long polling](https://core.telegram.org/bots/api#getupdates)**, which stalls your request until an update is ready to be delivered (or until the request times out).
+By default the `pull.php` will wait for as long as *1 minute* (i.e., 60 seconds) for an update (see line 20).
+
+In order to turn off this feature and switch to immediate pulling, set the third parameter at line 20 as follows:
 
 ```php
-$content = telegram_get_updates(intval($last_update) + 1, 1, 120);
+$content = telegram_get_updates(intval($last_update) + 1, 1, 0);
 ```
 
-where the third parameter, `120`, is the maximum number of seconds to wait for the request to return (i.e., 2 minutes).
-Try, for instance, to launch the `php pull.php` script with long polling and *then* to send a message to your bot.
-The script should fetch the new update and terminate as soon as the message is delivered to Telegram.
+In this case the request will return right away and your script will terminate.
+Try launching `php pull.php` with different settings, either sending a message to your bot *before* or *after* launching the script.
+
+If the `pull.php` script is configured in *long-polling* mode it can also be launched in continuous polling, using the `continuous-poll.sh` shell script.
+The script does nothing else except running the pull script over and over, thus effectively keeping your Telegram bot alive and working without interruptions, even if for some reason you cannot run your bot in *push* mode (see below).
 
 ### Sending messages
 
-Once you receive a message from a user (notice that Telegram bot conversations always start with the user sending a `/start` command to the bot), you also receive a chat identifier (use the `chat_id` attribute of your received message object).
+Once you receive a message from a user (notice that Telegram bot conversations always start with the user sending a `/start` command to the bot), you also receive a **chat identifier** (use the `chat_id` attribute of your received message object).
 This identifier can be used to send messages back to the user.
 
 In order to do so, use the following function:

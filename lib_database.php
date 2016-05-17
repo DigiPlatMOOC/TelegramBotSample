@@ -84,7 +84,7 @@ function db_perform_action($sql) {
     $connection = db_open_connection();
 
     if(!mysqli_real_query($connection, $sql)) {
-        db_default_error_logging($connection);
+        db_default_error_logging($connection, "Failed to perform query ($sql)");
         return false;
     }
 
@@ -121,12 +121,12 @@ function db_scalar_query($sql) {
     // Sanity checks
     if(mysqli_field_count($connection) !== 1) {
         mysqli_free_result($result);
-        error_log("Query $sql generated results with multiple fields (non-scalar)");
+        error_log("Query ($sql) generated results with multiple fields (non-scalar)");
         return false;
     }
     if(mysqli_num_rows($result) !== 1) {
         mysqli_free_result($result);
-        error_log("Query $sql generated more than one row of results (non-scalar)");
+        error_log("Query ($sql) generated more than one row of results (non-scalar)");
         return false;
     }
 

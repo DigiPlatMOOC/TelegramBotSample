@@ -101,8 +101,8 @@ function db_perform_action($sql) {
  * Performs a "select query" which is expected to return one
  * single scalar value.
  * @param string $sql SQL query to perform.
- * @return mixed The single scalar value returned by the query
- *               or false on failure.
+ * @return mixed The single scalar value returned by the query,
+ *               null if no value was returned, or false on failure.
  */
 function db_scalar_query($sql) {
     $connection = db_open_connection();
@@ -124,10 +124,15 @@ function db_scalar_query($sql) {
         error_log("Query ($sql) generated results with multiple fields (non-scalar)");
         return false;
     }
-    if(mysqli_num_rows($result) !== 1) {
+    $num_rows = mysqli_num_rows($result);
+    if($num_rows > 1) {
         mysqli_free_result($result);
         error_log("Query ($sql) generated more than one row of results (non-scalar)");
         return false;
+    }
+    else if($num_rows == 0) {
+        mysqli_free_result($result);
+        return null;
     }
 
     // Extract first row

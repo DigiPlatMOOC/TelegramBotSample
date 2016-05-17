@@ -8,7 +8,7 @@
  * Start editing here. =)
  */
 
-include ('lib.php');
+include('lib.php');
 
 // Reload latest update ID received (if any) from persistent store
 $last_update = @file_get_contents("pull-last-update.txt");
@@ -23,13 +23,13 @@ if($content === false) {
     exit;
 }
 if(count($content) == 0) {
-    echo ('No new messages.' . PHP_EOL);
+    echo 'No new messages.' . PHP_EOL;
     exit;
 }
 
 $first_update = $content[0];
 
-echo ('New update received:' . PHP_EOL);
+echo 'New update received:' . PHP_EOL;
 print_r($first_update);
 
 // Updates have the following structure:
@@ -48,5 +48,5 @@ $message = $first_update['message'];
 // Update persistent store with latest update ID received
 file_put_contents("pull-last-update.txt", $update_id);
 
-process_message($message);
+include 'msg_processing_simple.php';
 ?>

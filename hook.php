@@ -8,7 +8,7 @@
  * Start editing here. =)
  */
 
-include ('lib.php');
+include 'lib.php';
 
 // Get input contents
 // Notice: we use php://stdin (the HTTP request body) normally, but switch
@@ -25,7 +25,8 @@ if (!$update) {
 }
 else {
     if (isset($update['message'])) {
-        process_message($update['message']);
+        $message = $update['message'];
+        include 'msg_processing_simple.php';
     }
     else {
         error_log('Bad message received (no message field)');

@@ -38,6 +38,7 @@ function process_message($message) {
     //   }
     $message_id = $message['message_id'];
     $chat_id = $message['chat']['id'];
+    $from_id = $message['from']['id'];
 
     if (isset($message['text'])) {
         // We got an incoming text message

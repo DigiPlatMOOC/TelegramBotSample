@@ -67,6 +67,8 @@ Check out the script `send.php` for a complete example (you'll have to fill in a
 php send.php "This is the text to send!"
 ```
 
+Also, take a look to the `lib.php` file, which includes many other library functions you can use to send messages, photos, and locations through the Telegram API.
+
 ### Receiving messages (push)
 
 Telegram bot conversations can also work in *push* mode: instead of making your code constantly fetch updates from Telegram server, it is the service itself that calls your code and activates your bot.
@@ -93,40 +95,21 @@ Once the "web hook" has been setup, Telegram will automatically call your `hook.
 
 ## Message processing
 
-Both the `pull.php` and the `push.php` scripts receive messages from Telegram and process them by calling into the `process_message` function in `lib_msg_processing.php`.
-The function takes a new message as input and includes some boilerplate code for you to fill out:
+Both the `pull.php` and the `hook.php` scripts receive messages from Telegram and process them by including the `msg_processing_simple.php` script.
+The script assumes that a new message was received (stored as the `$message` variable) and includes some boilerplate code for you to fill out:
 
 ```php
-function process_message($message) {
-    // $message = {
-    //     "message_id": 123,
-    //     "from": {
-    //       "id": 123456789,
-    //       "first_name": "First",
-    //       "last_name": "Last",
-    //       "username": "FirstLast"
-    //     },
-    //     "chat": {
-    //       "id": 123456789,
-    //       "first_name": "First",
-    //       "last_name": "Last",
-    //       "username": "FirstLast",
-    //       "type": "private"
-    //     },
-    //     "date": 1460036220,
-    //     "text": "Text"
-    //   }
-    $message_id = $message['message_id'];
-    $chat_id = $message['chat']['id'];
-    $message_text = $message['text'];
+// Assumes incoming $message object
+$message_id = $message['message_id'];
+$chat_id = $message['chat']['id'];
+$message_text = $message['text'];
 
-    // TODO: put message processing logic here
-}
+// TODO: put message processing logic here
 ```
 
 Notice that the `$message_text` variable can be `null` if the message does not contain any text (for instance, if the user did send a location or an image).
 
-You can easily create an "echo bot" (that simply responds by sending back the original text to the user) by calling a library function:
+You can easily create an "echo bot" (that simply responds by sending back the original text to the user) by adding this call to the library function:
 
 ```php
 telegram_send_message($chat_id, $message_text, null);
@@ -139,6 +122,9 @@ if (strpos($text, "/start") === 0) {
     // Received a /start command
 }
 ```
+
+Take a look to the `msg_processing_simple.php` script for a general idea of how message processing looks like.
+By adding logic you can start adding some kind of *intelligence* to your bot.
 
 ### Connecting with an AIML bot
 
@@ -177,3 +163,73 @@ $response = telegram_send_message($chat_id, $bot_response, null);
 
 In order to customize your bot's intelligence, you'll have to download Program-O, install it locally to your server (this software requires PHP and MySQL), and then hook it up to your Telegram bot web hook.
 By providing one or more AIML files to the Program-O interpeter, you'll be able to have an *almost* natural conversation with your bot in no time.
+
+Check out `sample-apis/program-o.php` for a stand-alone sample.
+
+### Conversations and Program-O
+
+When linking a Telegram bot and a Program-O bot to provide a, seemingly, intelligent conversation with your users, it is important for the Program-O bot to correctly identify the user it is talking to.
+
+As you may have noticed, the Program-O API provides a `convo_id` parameter.
+This parameter identifies the conversation to the Program-O bot and allows it to distinguish between different users and different chats.
+
+In the example above we simply used *one* conversation ID for every incoming message (namely, “uwiclab-bot-sample”).
+This, however, means that every user talking with our Program-O bot shares the same conversation and also the same memory.
+Any information stored about the user thus applies to *every* user of your bot.
+
+This can be easily fixed: just make sure to provide a different `convo_id` parameter for every Telegram conversation.
+For instance, by altering the code above as follows:
+
+```php
+$handle = prepare_curl_api_request('http://api.program-o.com/v2/chatbot/', 'POST',
+    array(
+        'say' => $message_text,
+        'bot_id' => 6,
+        'format' => 'json',
+        'convo_id' => "telegram-$chat_id"
+    ),
+    null,
+    array(
+        'Content-Type: application/x-www-form-urlencoded',
+        'Accept: application/json'
+    )
+);
+```
+
+In this way, a message on Telegram chat #123123123 will be forwarded to Program-O using the `telegram-123123123` conversation ID.
+This keeps every Telegram chat well separated from the others.
+
+## The bot's memory: using a database
+
+As long as you let Program-O drive your Telegram bot, there actually is no need to take care of the bot's memory: the Program-O interpreter does all the work for you.
+
+However, if you should choose to write your own bot logic in PHP, you'll need a persistent storage to keep information about your users and about the conversations they are having.
+That is, you'll need a **database**.
+
+Make sure you edit the `config.php` and provide the correct database connection credentials.
+
+```php
+define('DATABASE_HOST', 'localhost');
+define('DATABASE_NAME', '');
+define('DATABASE_USERNAME', '');
+define('DATABASE_PASSWORD', '');
+```
+
+The constants above are used by the `lib_database.php` script, that provides several useful functions for using a database from your code.
+
+Once correctly setup, launch the database setup script.
+(This needs to be done only *once*.)
+
+```
+php setup.php
+```
+
+Your database will be updated with a `conversation` table, which allows your bot to keep track of the state of its conversations.
+In particular, state is stored as a simple integer, matching the ID of the user talking to the bot.
+
+Switch to the `msg_processing_conversation.php` script in your `pull.php` (or `hook.php`) file and check out how the conversational message processing works.
+
+## Help!
+
+Any questions?
+Send us an e-mail or open an issue here on Github and we'll be glad to help.

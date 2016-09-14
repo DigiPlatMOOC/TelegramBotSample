@@ -64,6 +64,10 @@ function db_open_connection($quick = false) {
             die();
         }
 
+        if(!mysqli_real_query($connection, 'SET NAMES utf8')) {
+            error_log("Failed to set connection character set to UTF8");
+        }
+
         // Store connection for later
         $GLOBALS['db_connection'] = $connection;
 

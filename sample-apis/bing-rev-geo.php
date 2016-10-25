@@ -8,7 +8,7 @@
  */
 
 define('BING_API', '');
- 
+
 include ('../lib.php');
 
 if(count($argv) < 3) {
@@ -23,14 +23,12 @@ $handle = prepare_curl_api_request("http://dev.virtualearth.net/REST/v1/Location
 
 $response = perform_curl_request($handle);
 if($response === false) {
-    error_log('Failed to perform request.');
-    exit;
+    Logger::fatal('Failed to perform request.', __FILE__);
 }
 
 $json = json_decode($response, true);
 if(!$json['resourceSets']) {
-    error_log('Response contains no resource sets');
-    exit;
+    Logger::fatal('Response contains no resource sets', __FILE__);
 }
 
 $sets = $json['resourceSets'];
@@ -38,13 +36,13 @@ $s = 1;
 
 foreach($sets as $set) {
     echo "Resource set #$s" . PHP_EOL;
-    
+
     $resources = $sets[0]['resources'];
     $r = 1;
-    
+
     foreach($resources as $resource) {
         echo "Resource #$r" . PHP_EOL;
-        
+
         $address = $resource['address'];
         $confidence = $resource['confidence'];
 
@@ -52,10 +50,10 @@ foreach($sets as $set) {
         print_r($address);
 
         echo "Confidence: $confidence" . PHP_EOL;
-        
+
         $r++;
     }
-    
+
     $s++;
 }
 ?>

@@ -112,7 +112,7 @@ if (isset($message['text'])) {
 }
 else {
     if(telegram_send_message($chat_id, 'Sorry, I understand only text messages!') === false) {
-        error_log('Failed to answer in chat');
+        Logger::error('Failed to answer in chat', __FILE__);
     }
 }
 ?>

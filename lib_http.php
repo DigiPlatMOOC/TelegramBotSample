@@ -19,7 +19,7 @@ function perform_curl_request($handle) {
     if ($response === false) {
         $errno = curl_errno($handle);
         $error = curl_error($handle);
-        error_log("Curl returned error $errno: $error");
+        Logger::error("Curl returned error $errno: $error", __FILE__);
 
         curl_close($handle);
 
@@ -31,15 +31,15 @@ function perform_curl_request($handle) {
     curl_close($handle);
 
     if ($http_code >= 500) {
-        error_log('Internal server error');
+        Logger::warning('Internal server error', __FILE__);
         return false;
     }
     else if($http_code == 401) {
-        error_log('Unauthorized request (check token)');
+        Logger::warning('Unauthorized request (check token)', __FILE__);
         return false;
     }
     else if ($http_code != 200) {
-        error_log("Request failure with code $http_code ($response)");
+        Logger::warning("Request failure with code $http_code ($response)", __FILE__);
         return false;
     }
     else {

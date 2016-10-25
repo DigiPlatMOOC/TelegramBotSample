@@ -33,13 +33,10 @@ $handle = prepare_curl_api_request('https://api.random.org/json-rpc/1/invoke', '
 
 $response = perform_curl_request($handle);
 if($response === false) {
-    error_log('Failed to perform request.');
-    exit;
+    Logger::fatal('Failed to perform request', __FILE__);
 }
 
-echo ('Response from Random.org API: ');
-print_r($response);
-echo (PHP_EOL);
+Logger::debug('Response from Random.org API: '. print_r($response, true));
 
-echo 'Random number: ' . json_decode($response, true)['result']['random']['data'][0] . PHP_EOL;
+Logger::info('Random number: ' . json_decode($response, true)['result']['random']['data'][0], __FILE__);
 ?>

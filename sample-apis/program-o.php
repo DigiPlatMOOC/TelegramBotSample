@@ -32,15 +32,12 @@ $handle = prepare_curl_api_request('http://api.program-o.com/v2/chatbot/', 'POST
 
 $response = perform_curl_request($handle);
 if($response === false) {
-    error_log('Failed to perform request.');
-    exit;
+    Logger::fatal('Failed to perform request', __FILE__);
 }
 
-echo ('Response from Program-O bot: ');
-print_r($response);
-echo (PHP_EOL);
+Logger::debug('Response from Program-O bot: '. print_r($response, true));
 
 $json_response = json_decode($response, true);
-echo 'You said: ' . $json_response['usersay'] . PHP_EOL;
-echo 'Bot says: ' . $json_response['botsay'] . PHP_EOL;
+Logger::info('You said: ' . $json_response['usersay'], __FILE__);
+Logger::info('Bot says: ' . $json_response['botsay'], __FILE__);
 ?>

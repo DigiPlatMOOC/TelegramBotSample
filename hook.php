@@ -20,8 +20,7 @@ $content = file_get_contents(is_cli() ? "php://stdin" : "php://input");
 $update = json_decode($content, true);
 
 if (!$update) {
-    error_log('Bad message received (not JSON)');
-    exit;
+    Logger::fatal('Bad message received (not JSON)', __FILE__);
 }
 else {
     if (isset($update['message'])) {
@@ -29,8 +28,7 @@ else {
         include 'msg_processing_simple.php';
     }
     else {
-        error_log('Bad message received (no message field)');
-        exit;
+        Logger::fatal('Bad message received (no message field)', __FILE__);
     }
 }
 ?>

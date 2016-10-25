@@ -19,18 +19,16 @@ $last_update = @file_get_contents("pull-last-update.txt");
 //       to enable (the request will hang until timeout or until a message is received).
 $content = telegram_get_updates(intval($last_update) + 1, 1, 60);
 if($content === false) {
-    error_log('Failed to fetch updates from API');
-    exit;
+    Logger::fatal('Failed to fetch updates from API', __FILE__);
 }
 if(count($content) == 0) {
-    echo 'No new messages.' . PHP_EOL;
+    Logger::debug('No new messages', __FILE__);
     exit;
 }
 
 $first_update = $content[0];
 
-echo 'New update received:' . PHP_EOL;
-print_r($first_update);
+Logger::debug('New update received: ' . print_r($first_update, true), __FILE__);
 
 // Updates have the following structure:
 // [

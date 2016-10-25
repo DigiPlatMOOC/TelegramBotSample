@@ -289,4 +289,29 @@ function telegram_get_updates($offset = null, $limit = null, $long_poll = false)
 
     return perform_telegram_request($handle);
 }
-?>
+
+/**
+ * Edits a past text message.
+ * https://core.telegram.org/bots/api#updating-messages
+ *
+ * @param int $chat_id Identifier of the Telegram chat session.
+ * @param int $message_id Identifier of the existing chat message.
+ * @param string $message Replacement message.
+ * @param array $parameters Additional parameters that match the API request.
+ * @return object | false Parsed JSON object returned by the API or false on failure.
+ */
+function telegram_edit_message($chat_id, $message_id, $text, $parameters = null) {
+    $parameters = prepare_parameters($parameters, array(
+        'chat_id' => $chat_id,
+        'message_id' => $message_id,
+        'text' => $text
+    ));
+
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_EDIT_MESSAGE, 'POST', $parameters, null);
+    if($handle === false) {
+        Logger::error('Failed to prepare cURL handle', __FILE__);
+        return false;
+    }
+
+    return perform_telegram_request($handle);
+}

@@ -197,6 +197,29 @@ function telegram_send_photo($chat_id, $photo_path, $caption, $parameters = null
 }
 
 /**
+ * Sends a Telegram chat action update.
+ * https://core.telegram.org/bots/api#sendchataction
+ *
+ * @param int $chat_id Identifier of the Telegram chat session.
+ * @param string $action Type of action. See online API documentation.
+ * @return object | false Parsed JSON object returned by the API or false on failure.
+ */
+function telegram_send_chat_action($chat_id, $action = 'typing') {
+    $parameters = prepare_parameters($parameters, array(
+        'chat_id' => $chat_id,
+        'action' => $action
+    ));
+
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_SEND_ACTION, 'POST', $parameters, null);
+    if($handle === false) {
+        error_log('Failed to prepare cURL handle');
+        return false;
+    }
+
+    return perform_telegram_request($handle);
+}
+
+/**
  * Requests message updates from the Telegram API.
  * https://core.telegram.org/bots/api#getupdates
  *

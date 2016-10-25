@@ -17,6 +17,7 @@ define('TELEGRAM_API_URI_EDIT_MESSAGE', TELEGRAM_API_URI_BASE . 'editMessageText
 define('TELEGRAM_API_URI_LOCATION', TELEGRAM_API_URI_BASE . 'sendLocation');
 define('TELEGRAM_API_URI_PHOTO', TELEGRAM_API_URI_BASE . 'sendPhoto');
 define('TELEGRAM_API_URI_UPDATES', TELEGRAM_API_URI_BASE . 'getUpdates');
+define('TELEGRAM_API_URI_SEND_ACTION', TELEGRAM_API_URI_BASE . 'sendChatAction');
 
 // Optional configuration: fill in if you use a MySQL database
 // and make use of the library functions in lib_database.php

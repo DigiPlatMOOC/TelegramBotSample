@@ -245,5 +245,3 @@ function db_row_query($sql) {
 function db_escape($s) {
     return mysqli_real_escape_string(db_open_connection(true), (string)$s);
 }
-
-?>

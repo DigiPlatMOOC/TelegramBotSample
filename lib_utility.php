@@ -27,3 +27,27 @@ function prepare_parameters($orig_params, $add_params) {
 
     return $orig_params;
 }
+
+/**
+ * Checks whether a text string starts with another.
+ * Performs a case-insensitive check.
+ *
+ * @param $text String to search in.
+ * @param $substring String to search for.
+ * @return bool True if $text starts with $substring.
+ */
+function starts_with($text = '', $substring = '') {
+    return (strpos(mb_strtolower($text), mb_strtolower($substring)) === 0);
+}
+
+/**
+ * Extracts the command payload from a string.
+ * Returns the string following the first command in a string (i.e., given
+ * input "/start 123", returns "123").
+ *
+ * @param $text String to search in.
+ * @return string Command payload, if any, or empty string.
+ */
+function extract_command_payload($text = '') {
+    return mb_ereg_replace("^\/[a-zA-Z0-9_]*( |$)", '', $text);
+}

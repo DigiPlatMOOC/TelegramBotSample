@@ -8,6 +8,15 @@
  */
 
 /**
+ * Gets whether the script is running from the Command Line Interface.
+ *
+ * @return bool True if running from the CLI.
+ */
+function is_cli() {
+    return (php_sapi_name() === 'cli');
+}
+
+/**
  * Mixes together parameters for an HTTP request.
  *
  * @param array $orig_params Original parameters or null.

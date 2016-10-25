@@ -11,10 +11,10 @@
 include 'lib.php';
 
 // Get input contents
-// Notice: we use php://stdin (the HTTP request body) normally, but switch
+// Notice: we use php://input (the HTTP request body) normally, but switch
 //         over to php://stdin (standard input channel) when running from
 //         command line, in order to let you test the script via input pipe
-$content = file_get_contents((php_sapi_name() == "cli") ? "php://stdin" : "php://input");
+$content = file_get_contents(is_cli() ? "php://stdin" : "php://input");
 
 // Decode contents as JSON
 $update = json_decode($content, true);

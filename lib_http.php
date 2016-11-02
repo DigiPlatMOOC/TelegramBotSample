@@ -7,6 +7,9 @@
  * Support library. Don't change a thing here.
  */
 
+// Map storing private data of open requests
+$curl_requests_private_data = array();
+
 /**
  * Prepares an API request using cURL.
  * Returns a cURL handle, ready to perform the request, or false on failure.
@@ -79,13 +82,15 @@ function prepare_curl_api_request($url, $method, $parameters = null, $body = nul
  * @return object | false cURL handle or false on failure.
  */
 function prepare_curl_download_request($url, $output_path) {
+    global $curl_requests_private_data;
+
     // Parameter checking
     if(!is_string($url)) {
         Logger::error('URL must be a string', __FILE__);
         return false;
     }
-    $fp = fopen(dirname(__FILE__) . '/' . $output_path, 'wb');
-    if($fp === false) {
+    $file_handle = fopen(dirname(__FILE__) . '/' . $output_path, 'wb');
+    if($file_handle === false) {
         Logger::error("Cannot write to path {$output_path}", __FILE__);
         return false;
     }
@@ -94,12 +99,19 @@ function prepare_curl_download_request($url, $output_path) {
 
     // Prepare cURL handle
     $handle = curl_init($url);
-    curl_setopt($handle, CURLOPT_FILE, $fp);
+    curl_setopt($handle, CURLOPT_FILE, $file_handle);
     curl_setopt($handle, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($handle, CURLOPT_AUTOREFERER, true);
     curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($handle, CURLOPT_MAXREDIRS, 1);
     curl_setopt($handle, CURLOPT_USERAGENT, 'Telegram Bot client, UWiClab (https://github.com/UWiClab/TelegramBotSample)');
+
+    // Store private data
+    $uuid = uniqid();
+    curl_setopt($handle, CURLOPT_PRIVATE, $uuid);
+    $curl_requests_private_data[$uuid] = array(
+        'file_handle' => $file_handle
+    );
 
     return $handle;
 }
@@ -111,6 +123,8 @@ function prepare_curl_download_request($url, $output_path) {
  * @return string | false Response as text or false on failure.
  */
 function perform_curl_request($handle) {
+    global $curl_requests_private_data;
+
     $response = curl_exec($handle);
 
     if ($response === false) {
@@ -124,6 +138,20 @@ function perform_curl_request($handle) {
     }
 
     $http_code = intval(curl_getinfo($handle, CURLINFO_HTTP_CODE));
+
+    // Handle private data associated to the request
+    $private_uuid = curl_getinfo($handle, CURLINFO_PRIVATE);
+    if($private_uuid !== false) {
+        $private_data = $curl_requests_private_data[$private_uuid];
+        if($private_data !== null) {
+            // Close file handle
+            if($private_data['file_handle']) {
+                fclose($private_data['file_handle']);
+            }
+
+            unset($curl_requests_private_data[$private_uuid]);
+        }
+    }
 
     curl_close($handle);
 

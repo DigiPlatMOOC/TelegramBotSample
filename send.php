@@ -10,6 +10,7 @@
 
 include ('lib.php');
 
+// Put the chat identifier here in order to send messages from your bot
 define('CHAT_ID', 123456789);
 
 if(count($argv) < 2) {

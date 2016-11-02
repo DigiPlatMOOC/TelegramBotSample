@@ -1,6 +1,7 @@
 # Telegram Bot Sample
 
-Simple Telegram bot backend template in PHP (works both in *pull* and in *push* mode).
+Simple Telegram bot backend template, written in PHP.
+Works both in *pull* and in *push* mode.
 
 You can use this code as a starting point for your own bot and add your own intelligence through custom PHP code, external services (perhaps an Alice AIML interpreter?), or anything else.
 
@@ -11,7 +12,7 @@ Have fun!
 You need:
 
 * **PHP:** in order to run samples and make your bot work in *pull* mode.
-* **A web server:** in order to serve requests by Telegram, in *push* mode (Apache, Nginx, or anything similar, really).
+* **A web server and a domain:** in order to serve requests by Telegram in *push* mode (Apache, Nginx, or anything similar, really).
 
 First of all, create a new Telegram Bot, by chatting with the [BotFather](http://telegram.me/BotFather). Your bot will need a unique **nickname** and you will obtain a unique **token** in return.
 This token is all you need to communicate with the bot through the Telegram API.
@@ -28,7 +29,7 @@ Once the bot's token has been set, you can very easily fetch new messages (one b
 php pull.php
 ```
 
-This will retrieve new messages (if any) and print out the JSON data to console.
+This will retrieve new messages (if any) and print out the JSON data to standard output by default.
 
 Notice that Telegram keeps a queue of received and delivered messages on its servers.
 If no particular message is queried, Telegram may return the same message over and over.
@@ -36,7 +37,7 @@ In order to advance through the queue of messages to deliver, the `pull.php` scr
 The last update ID is stored in the `pull-last-update.txt` file.
 
 Also notice that Telegram's `getUpdates` query can perform **[long polling](https://core.telegram.org/bots/api#getupdates)**, which stalls your request until an update is ready to be delivered (or until the request times out).
-By default the `pull.php` will wait for as long as *1 minute* (i.e., 60 seconds) for an update (see line 20).
+By default the `pull.php` will wait for as long as *60 seconds* for an update (see line 20).
 
 In order to turn off this feature and switch to immediate pulling, set the third parameter at line 20 as follows:
 
@@ -47,7 +48,7 @@ $content = telegram_get_updates(intval($last_update) + 1, 1, 0);
 In this case the request will return right away and your script will terminate.
 Try launching `php pull.php` with different settings, either sending a message to your bot *before* or *after* launching the script.
 
-If the `pull.php` script is configured in *long-polling* mode it can also be launched in continuous polling, using the `continuous-poll.sh` shell script.
+If the `pull.php` script is configured to use *long-polling*, it can also be launched in continuous polling, using the `continuous-poll.sh` shell script.
 The script does nothing else except running the pull script over and over, thus effectively keeping your Telegram bot alive and working without interruptions, even if for some reason you cannot run your bot in *push* mode (see below).
 
 ### Sending messages
@@ -61,7 +62,7 @@ In order to do so, use the following function:
 $response = telegram_send_message(CHAT_ID, "Hello user!", null);
 ```
 
-Check out the script `send.php` for a complete example (you'll have to fill in an existing chat ID at line 13), that allows to send messages through a command line parameter:
+Check out the script `send.php` for a complete example (you'll have to fill in an existing chat ID at line 14), that allows to send messages through a command line parameter:
 
 ```
 php send.php "This is the text to send!"
@@ -89,7 +90,7 @@ chmod +x register-bot.sh
 Replace the `-t` parameter with your bot's actual token and the `-c` parameter with the path to your certificate (either a PEM or a CRT file).
 The `-s` parameter should be an HTTPS URI pointing to the `hook.php` file on your web server.
 
-Once the "web hook" has been setup, Telegram will automatically call your `hook.php` file whenever a message is received.
+Once the "web hook" has been registered, Telegram will automatically call your `hook.php` file whenever a message is received.
 
 (You can turn off any registered web hook by running the `unregister-bot.sh` script and passing in the bot's token.)
 
@@ -107,12 +108,12 @@ $message_text = $message['text'];
 // TODO: put message processing logic here
 ```
 
-Notice that the `$message_text` variable can be `null` if the message does not contain any text (for instance, if the user did send a location or an image).
+Notice that the `$message_text` variable can be `null` if the message does not contain any text (for instance, if the user sent a location or an image instead of a text message).
 
 You can easily create an "echo bot" (that simply responds by sending back the original text to the user) by adding this call to the library function:
 
 ```php
-telegram_send_message($chat_id, $message_text, null);
+telegram_send_message($chat_id, $message_text);
 ```
 
 Also, you can easily detect Telegram commands (which, by convention, start with a slash character, like `/start`) using `strpos`:

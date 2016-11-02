@@ -95,7 +95,7 @@ function prepare_curl_api_request($url, $method, $parameters = null, $body = nul
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
 function telegram_get_bot_info() {
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_ME, 'GET', null, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'getMe', 'GET', null, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;
@@ -119,7 +119,7 @@ function telegram_send_message($chat_id, $message, $parameters = null) {
         'text' => $message
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_MESSAGE, 'POST', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'sendMessage', 'POST', $parameters, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;
@@ -150,7 +150,7 @@ function telegram_send_location($chat_id, $latitude, $longitude, $parameters = n
         'longitude' => $longitude
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_LOCATION, 'POST', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'sendLocation', 'POST', $parameters, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;
@@ -184,7 +184,7 @@ function telegram_send_photo($chat_id, $photo_path, $caption, $parameters = null
         'caption' => $caption
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_PHOTO, 'POST', $parameters, array(
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'sendPhoto', 'POST', $parameters, array(
         'photo' => ($is_remote) ? $photo_path : new CURLFile($photo_path)
     ));
     if($handle === false) {
@@ -209,7 +209,7 @@ function telegram_send_chat_action($chat_id, $action = 'typing') {
         'action' => $action
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_SEND_ACTION, 'POST', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'sendChatAction', 'POST', $parameters, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;
@@ -240,7 +240,7 @@ function telegram_get_updates($offset = null, $limit = null, $long_poll = false)
     if(is_numeric($long_poll) && $long_poll > 0)
         $parameters['timeout'] = $long_poll;
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_UPDATES, 'GET', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'getUpdates', 'GET', $parameters, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;
@@ -266,7 +266,7 @@ function telegram_edit_message($chat_id, $message_id, $text, $parameters = null)
         'text' => $text
     ));
 
-    $handle = prepare_curl_api_request(TELEGRAM_API_URI_EDIT_MESSAGE, 'POST', $parameters, null);
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'editMessageText', 'POST', $parameters, null);
     if($handle === false) {
         Logger::error('Failed to prepare cURL handle', __FILE__);
         return false;

@@ -11,7 +11,7 @@
 include('lib.php');
 
 // Reload latest update ID received (if any) from persistent store
-$last_update = @file_get_contents("pull-last-update.txt");
+$last_update = @file_get_contents(dirname(__FILE__) . '/pull-last-update.txt');
 
 // Fetch updates from API
 // Note: we remember the last fetched ID and query for the next one, if available.
@@ -44,7 +44,7 @@ $update_id = $first_update['update_id'];
 $message = $first_update['message'];
 
 // Update persistent store with latest update ID received
-file_put_contents("pull-last-update.txt", $update_id);
+file_put_contents(dirname(__FILE__) . '/pull-last-update.txt', $update_id);
 
 include 'msg_processing_simple.php';
 ?>

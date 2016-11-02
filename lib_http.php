@@ -72,6 +72,39 @@ function prepare_curl_api_request($url, $method, $parameters = null, $body = nul
 }
 
 /**
+ * Prepares a simple raw download request using the GET method.
+ *
+ * @param $url string HTTP request URI.
+ * @param $output_path string Relative path to the output file.
+ * @return object | false cURL handle or false on failure.
+ */
+function prepare_curl_download_request($url, $output_path) {
+    // Parameter checking
+    if(!is_string($url)) {
+        Logger::error('URL must be a string', __FILE__);
+        return false;
+    }
+    $fp = fopen(dirname(__FILE__) . '/' . $output_path, 'wb');
+    if($fp === false) {
+        Logger::error("Cannot write to path {$output_path}", __FILE__);
+        return false;
+    }
+
+    Logger::info("HTTP download request to {$url}", __FILE__);
+
+    // Prepare cURL handle
+    $handle = curl_init($url);
+    curl_setopt($handle, CURLOPT_FILE, $fp);
+    curl_setopt($handle, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($handle, CURLOPT_AUTOREFERER, true);
+    curl_setopt($handle, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($handle, CURLOPT_MAXREDIRS, 1);
+    curl_setopt($handle, CURLOPT_USERAGENT, 'Telegram Bot client, UWiClab (https://github.com/UWiClab/TelegramBotSample)');
+
+    return $handle;
+}
+
+/**
  * Performs a cURL request and returns the expected response as string.
  *
  * @param object Handle to cURL request.

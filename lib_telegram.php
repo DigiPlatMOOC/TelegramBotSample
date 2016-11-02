@@ -23,6 +23,11 @@ function perform_telegram_request($handle) {
     if($response === false) {
         return false;
     }
+    else if($response === true) {
+        // Response does not contain response body
+        // Fake a successful API call with an empty response
+        return array();
+    }
 
     // Everything fine, return the result as object
     $response = json_decode($response, true);
@@ -163,6 +168,36 @@ function telegram_get_updates($offset = null, $limit = null, $long_poll = false)
     $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'getUpdates', 'GET', $parameters, null);
 
     return perform_telegram_request($handle);
+}
+
+/**
+ * Request information about a file on Telegram servers.
+ * https://core.telegram.org/bots/api#getfile
+ *
+ * @param string $file_id File Identifier.
+ * @return array | bool Parsed JSON object with file information or false on failure.
+ */
+function telegram_get_file_info($file_id) {
+    $parameters = array(
+        'file_id' => $file_id
+    );
+
+    $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'getFile', 'POST', $parameters, null);
+
+    return perform_telegram_request($handle);
+}
+
+/**
+ * Download a file from Telegram.
+ * https://core.telegram.org/bots/api#getfile
+ *
+ * @param $file_path string File path as returned by a getFile request.
+ * @param $output_path string Relative path to the output file.
+ * @return bool True if download successful.
+ */
+function telegram_download_file($file_path, $output_path) {
+    $handle = prepare_curl_download_request(TELEGRAM_FILE_API_URI_BASE . $file_path, $output_path);
+    return (perform_telegram_request($handle) !== false);
 }
 
 /**

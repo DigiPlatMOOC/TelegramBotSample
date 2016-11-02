@@ -7,8 +7,6 @@
  * Configuration file.
  */
 
-define('PROGRAM_O_API_URI','http://api.program-o.com/v2/chatbot');
-
 define('TELEGRAM_BOT_TOKEN', 'INSERT TOKEN HERE');
 define('TELEGRAM_API_URI_BASE', 'https://api.telegram.org/bot' . TELEGRAM_BOT_TOKEN . '/');
 define('TELEGRAM_API_URI_ME', TELEGRAM_API_URI_BASE . 'getMe');

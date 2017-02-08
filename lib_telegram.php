@@ -130,10 +130,10 @@ function telegram_send_photo($chat_id, $photo_id, $caption, $parameters = null) 
  * @return object | false Parsed JSON object returned by the API or false on failure.
  */
 function telegram_send_chat_action($chat_id, $action = 'typing') {
-    $parameters = prepare_parameters($parameters, array(
+    $parameters = array(
         'chat_id' => $chat_id,
         'action' => $action
-    ));
+    );
 
     $handle = prepare_curl_api_request(TELEGRAM_API_URI_BASE . 'sendChatAction', 'POST', $parameters, null);
 
